@@ -111,3 +111,4 @@ settings/Mainnet.toml
 .svelte-kit
 
 # End of https://www.gitignore.io/api/node,typescript,nextjs
+docs
