@@ -9,6 +9,16 @@ requirements = []
 path = 'contracts/stream.clar'
 clarity_version = 3
 epoch = 3.1
+
+[contracts.mock-token]
+path = 'contracts/mock-token.clar'
+clarity_version = 3
+epoch = 3.1
+
+[contracts.stream-enhanced-v2]
+path = 'contracts/stream-enhanced-v2.clar'
+clarity_version = 3
+epoch = 3.1
 [repl.analysis]
 passes = ['check_checker']
 
