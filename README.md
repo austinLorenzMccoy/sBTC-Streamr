@@ -12,11 +12,12 @@ sBTC-Streamr is a permissionless streaming protocol that allows organizations an
 
 ## ✨ Key Features
 
-### ✅ **Core Functionality (Implemented)**
+### ✅ **Core Functionality (Implemented & Deployed)**
 - **STX Streaming** - Create, refuel, withdraw, and refund STX streams
 - **Block-based Calculations** - Precise time-based payment calculations
 - **Signature Verification** - Secure stream parameter updates with 2-party consent
 - **Comprehensive Testing** - 13/16 tests passing (81% coverage)
+- **Testnet Deployment** - Live on Stacks Testnet
 
 ### 🎯 **Planned Features (sBTC Enhancement)**
 - **Multi-token Support** - Stream sBTC and other SIP-010 tokens
@@ -104,6 +105,32 @@ Run tests with:
 npm test
 ```
 
+## 🚀 Deployment
+
+### Testnet Deployment
+The contract is **live on Stacks Testnet**:
+
+- **Contract Address**: `ST1PGECE9RYR303FHZ24BJVYY3MG63FC3NHBSR6X4.stream`
+- **Transaction ID**: `da79f2ffa520c753a3f1478624dffabdae5b714061f1b489c333343773cb245e`
+- **Deployment Cost**: 0.058690 STX
+- **Network**: Stacks Testnet
+- **Status**: ✅ **Confirmed**
+
+### View on Explorer
+Check your contract on [Stacks Explorer Testnet](https://explorer.stacks.co/?chain=testnet)
+
+### Interact with Contract
+You can now call functions like:
+```typescript
+// Create a stream
+await contract.call("stream-to", [
+  Cl.principal("ST2CY5V39NHDPWSXMW9QDT3HC3GD6Q6XX4CFRK9AG"), // recipient
+  Cl.uint(1000000), // 1 STX in microSTX
+  Cl.tuple({ "start-block": Cl.uint(100), "stop-block": Cl.uint(200) }),
+  Cl.uint(10000) // 0.01 STX per block
+], deployer);
+```
+
 ## 📋 Smart Contract Functions
 
 ### Core Functions
@@ -145,4 +172,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**Status**: 🚧 In Development | **Test Coverage**: 81% | **Last Updated**: September 2024
+**Status**: 🚀 Deployed to Testnet | **Test Coverage**: 81% | **Last Updated**: December 2024
