@@ -119,32 +119,6 @@ npm test
 - `hash-stream` - Generate stream hash for signatures
 - `validate-signature` - Verify signature authenticity
 
-## 🎯 Roadmap
-
-### Phase 1: Core Foundation ✅
-- [x] Clarinet development environment
-- [x] Basic STX streaming contract
-- [x] Comprehensive test suite
-- [x] Core functionality implementation
-
-### Phase 2: sBTC Enhancement 🚧
-- [ ] Multi-token support (sBTC, SIP-010)
-- [ ] Deposit-then-create pattern
-- [ ] Enhanced token handling
-- [ ] Extended test coverage
-
-### Phase 3: Frontend Integration 📋
-- [ ] React PWA development
-- [ ] Wallet connectivity (Leather, Xverse)
-- [ ] User interface for stream management
-- [ ] Real-time balance updates
-
-### Phase 4: Production Ready 📋
-- [ ] Chainhook indexing
-- [ ] Backend API development
-- [ ] Security audit
-- [ ] Mainnet deployment
-
 ## 🤝 Contributing
 
 1. Fork the repository
