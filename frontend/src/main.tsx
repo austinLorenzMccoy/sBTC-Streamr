@@ -1,27 +1,14 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import { Connect } from '@stacks/connect-react'
 import App from './App.tsx'
 import './index.css'
+import { setupErrorHandling } from './utils/errorHandler'
 
-const appConfig = {
-  appDetails: {
-    name: 'sBTC-Streamr',
-    icon: '/vite.svg',
-  },
-  userSession: {
-    appConfig: {
-      scopes: ['store_write', 'publish_data'],
-      redirectTo: '/',
-      manifestPath: '/manifest.json',
-    },
-  },
-}
+// Setup global error handling for wallet provider conflicts
+setupErrorHandling()
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <Connect {...appConfig}>
-      <App />
-    </Connect>
+    <App />
   </React.StrictMode>,
 )

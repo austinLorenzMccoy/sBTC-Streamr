@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { useAuth } from '../hooks/useAuth'
 import { Plus, TrendingUp, Clock, DollarSign, ArrowUpRight, ArrowDownRight } from 'lucide-react'
+import WalletInfo from './WalletInfo'
 
 interface Stream {
   id: number
@@ -20,7 +20,7 @@ interface Stream {
 }
 
 export default function Dashboard() {
-  const { address } = useAuth()
+  const address = 'ST1PGECE9RYR303FHZ24BJVYY3MG63FC3NHBSR6X4' // Mock address
   const [streams, setStreams] = useState<Stream[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -83,6 +83,9 @@ export default function Dashboard() {
           Create Stream
         </Link>
       </div>
+
+      {/* Wallet Info */}
+      <WalletInfo />
 
       {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">

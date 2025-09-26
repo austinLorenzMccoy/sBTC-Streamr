@@ -1,0 +1,18 @@
+---
+id: 0
+name: Testnet deployment
+network: testnet
+stacks-node: "https://api.testnet.hiro.so"
+bitcoin-node: "http://blockstack:blockstacksystem@bitcoind.testnet.stacks.co:18332"
+plan:
+  batches:
+    - id: 0
+      transactions:
+        - contract-publish:
+            contract-name: sBTC-Streamr
+            expected-sender: ST1PGECE9RYR303FHZ24BJVYY3MG63FC3NHBSR6X4
+            cost: 112979
+            path: contracts/sBTC-Streamr.clar
+            anchor-block-only: true
+            clarity-version: 2
+      epoch: "2.1"

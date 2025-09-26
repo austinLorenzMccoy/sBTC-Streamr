@@ -1,24 +1,14 @@
 import React from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import { useConnect } from '@stacks/connect-react'
-import { useAuth } from './hooks/useAuth'
 import Header from './components/Header'
 import Dashboard from './components/Dashboard'
 import CreateStream from './components/CreateStream'
 import StreamDetails from './components/StreamDetails'
 import Analytics from './components/Analytics'
-import { ConnectWallet } from './components/ConnectWallet'
 
 function App() {
-  const { isSignedIn } = useAuth()
-  const { isOpen } = useConnect()
-
-  if (!isSignedIn) {
-    return <ConnectWallet />
-  }
-
   return (
-    <Router>
+    <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <div className="min-h-screen bg-gray-50">
         <Header />
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">

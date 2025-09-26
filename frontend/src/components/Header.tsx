@@ -1,16 +1,13 @@
 import React from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { useAuth } from '../hooks/useAuth'
-import { useConnect } from '@stacks/connect-react'
-import { Wallet, LogOut, Stream, BarChart3, Plus } from 'lucide-react'
+import { Wallet, LogOut, Zap, BarChart3, Plus } from 'lucide-react'
 
 export default function Header() {
-  const { address } = useAuth()
-  const { signOut } = useConnect()
   const location = useLocation()
+  const address = 'ST1PGECE9RYR303FHZ24BJVYY3MG63FC3NHBSR6X4' // Mock address
 
   const navigation = [
-    { name: 'Dashboard', href: '/', icon: Stream },
+    { name: 'Dashboard', href: '/', icon: Zap },
     { name: 'Create Stream', href: '/create', icon: Plus },
     { name: 'Analytics', href: '/analytics', icon: BarChart3 },
   ]
@@ -23,7 +20,7 @@ export default function Header() {
           <div className="flex items-center">
             <Link to="/" className="flex items-center space-x-2">
               <div className="w-8 h-8 bg-gradient-to-r from-primary-600 to-primary-800 rounded-lg flex items-center justify-center">
-                <Stream className="w-5 h-5 text-white" />
+                <Zap className="w-5 h-5 text-white" />
               </div>
               <span className="text-xl font-bold text-gradient">sBTC-Streamr</span>
             </Link>
@@ -60,7 +57,7 @@ export default function Header() {
               </span>
             </div>
             <button
-              onClick={() => signOut()}
+              onClick={() => console.log('Disconnect wallet')}
               className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
               title="Disconnect wallet"
             >
