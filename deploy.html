@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>sBTC-Streamr Contract Deployment</title>
+    <script src="https://unpkg.com/@stacks/transactions@6.3.0/dist/index.umd.js"></script>
+    <script src="https://unpkg.com/@stacks/network@6.3.0/dist/index.umd.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .status {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background-color: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        button {
+            background-color: #007bff;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            margin: 10px 0;
+        }
+        button:hover { background-color: #0056b3; }
+        button:disabled { background-color: #6c757d; cursor: not-allowed; }
+        .contract-info {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 sBTC-Streamr Contract Deployment</h1>
+        
+        <div class="contract-info">
+            <strong>Contract Name:</strong> sBTC-Streamr<br>
+            <strong>Deployer Address:</strong> ST1PGECE9RYR303FHZ24BJVYY3MG63FC3NHBSR6X4<br>
+            <strong>Network:</strong> Stacks Testnet<br>
+            <strong>Estimated Cost:</strong> 0.112979 STX
+        </div>
+
+        <div id="status" class="status info">
+            Ready to deploy your multi-token streaming protocol contract!
+        </div>
+
+        <button id="deployBtn" onclick="deployContract()">
+            Deploy Contract to Testnet
+        </button>
+
+        <div id="result"></div>
+    </div>
+
+    <script>
+        const { makeContractDeploy, broadcastTransaction, getAddressFromPrivateKey } = StacksTransactions;
+        const { StacksTestnet } = StacksNetwork;
+
+        const network = new StacksTestnet();
+        const mnemonic = "ready giraffe river census point resource reduce caught burst possible round soft unique system output mother life shaft claw physical blast stumble toy hurt";
+
+        async function deployContract() {
+            const deployBtn = document.getElementById('deployBtn');
+            const status = document.getElementById('status');
+            const result = document.getElementById('result');
+
+            deployBtn.disabled = true;
+            status.className = 'status info';
+            status.textContent = 'Generating wallet and creating transaction...';
+
+            try {
+                // Generate wallet from mnemonic
+                const wallet = await StacksWallet.generateWallet({ secretKey: mnemonic });
+                const privateKey = wallet.accounts[0].stxPrivateKey;
+                const address = getAddressFromPrivateKey(privateKey, 'testnet');
+
+                status.textContent = 'Creating deployment transaction...';
+
+                // Read contract code (you'll need to paste it here)
+                const contractCode = `;; title: sBTC-Streamr
+;; version: 0.0.1
+;; summary: Multi-token streaming protocol
+;; description: A protocol for streaming STX and SIP-010 tokens over time
+
+;; error codes
+(define-constant ERR_UNAUTHORIZED (err u0))
+(define-constant ERR_INVALID_SIGNATURE (err u1))
+(define-constant ERR_STREAM_STILL_ACTIVE (err u2))
+(define-constant ERR_INVALID_STREAM_ID (err u3))
+
+;; data vars
+(define-data-var latest-stream-id uint u0)
+
+;; streams mapping
+(define-map streams
+  uint ;; stream-id
+  {
+    sender: principal,
+    recipient: principal,
+    balance: uint,
+    withdrawn-balance: uint,
+    payment-per-block: uint,
+    timeframe: (tuple (start-block uint) (stop-block uint)),
+    token-contract: (optional principal)
+  }
+)
+
+;; Create a new stream with STX
+(define-public (stream-to
+    (recipient principal)
+    (initial-balance uint)
+    (timeframe (tuple (start-block uint) (stop-block uint)))
+    (payment-per-block uint)
+  )
+  (let (
+    (stream {
+      sender: contract-caller,
+      recipient: recipient,
+      balance: initial-balance,
+      withdrawn-balance: u0,
+      payment-per-block: payment-per-block,
+      timeframe: timeframe,
+      token-contract: none
+    })
+    (current-stream-id (var-get latest-stream-id))
+  )
+    (try! (stx-transfer? initial-balance contract-caller (as-contract tx-sender)))
+    (map-set streams current-stream-id stream)
+    (var-set latest-stream-id (+ current-stream-id u1))
+    (ok current-stream-id)
+  )
+)
+
+;; Create a new stream with SIP-010 token
+(define-public (stream-token-to
+    (recipient principal)
+    (initial-balance uint)
+    (timeframe (tuple (start-block uint) (stop-block uint)))
+    (payment-per-block uint)
+    (token-contract principal)
+  )
+  (let (
+    (stream {
+      sender: contract-caller,
+      recipient: recipient,
+      balance: initial-balance,
+      withdrawn-balance: u0,
+      payment-per-block: payment-per-block,
+      timeframe: timeframe,
+      token-contract: (some token-contract)
+    })
+    (current-stream-id (var-get latest-stream-id))
+  )
+    (map-set streams current-stream-id stream)
+    (var-set latest-stream-id (+ current-stream-id u1))
+    (ok current-stream-id)
+  )
+)
+
+;; Increase the locked STX balance for a stream
+(define-public (refuel
+    (stream-id uint)
+    (amount uint)
+  )
+  (let (
+    (stream (unwrap! (map-get? streams stream-id) ERR_INVALID_STREAM_ID))
+  )
+  (asserts! (is-eq contract-caller (get sender stream)) ERR_UNAUTHORIZED)
+  (try! (stx-transfer? amount contract-caller (as-contract tx-sender)))
+  (map-set streams stream-id 
+    (merge stream {balance: (+ (get balance stream) amount)})
+  )
+  (ok amount)
+  )
+)
+
+;; Calculate the number of blocks a stream has been active
+(define-read-only (calculate-block-delta
+    (timeframe (tuple (start-block uint) (stop-block uint)))
+  )
+  (let (
+    (start-block (get start-block timeframe))
+    (stop-block (get stop-block timeframe))
+
+    (delta 
+      (if (<= block-height start-block)
+        ;; then
+        u0
+        ;; else
+        (if (< block-height stop-block)
+          ;; then
+          (- block-height start-block)
+          ;; else
+          (- stop-block start-block)
+        ) 
+      )
+    )
+  )
+    delta
+  )
+)
+
+;; Check balance for a party involved in a stream
+(define-read-only (balance-of
+    (stream-id uint)
+    (who principal)
+  )
+  (let (
+    (stream (unwrap! (map-get? streams stream-id) u0))
+    (block-delta (calculate-block-delta (get timeframe stream)))
+    (recipient-balance (* block-delta (get payment-per-block stream)))
+  )
+    (if (is-eq who (get recipient stream))
+      (- recipient-balance (get withdrawn-balance stream))
+      (if (is-eq who (get sender stream))
+        (- (get balance stream) recipient-balance)
+        u0
+      )
+    )
+  )
+)
+
+;; Withdraw received tokens
+(define-public (withdraw
+    (stream-id uint)
+  )
+  (let (
+    (stream (unwrap! (map-get? streams stream-id) ERR_INVALID_STREAM_ID))
+    (balance (balance-of stream-id contract-caller))
+  )
+    (asserts! (is-eq contract-caller (get recipient stream)) ERR_UNAUTHORIZED)
+    (map-set streams stream-id 
+      (merge stream {withdrawn-balance: (+ (get withdrawn-balance stream) balance)})
+    )
+    (try! (as-contract (stx-transfer? balance tx-sender (get recipient stream))))
+    (ok balance)
+  )
+)
+
+;; Get hash of stream
+(define-read-only (hash-stream
+    (stream-id uint)
+    (new-payment-per-block uint)
+    (new-timeframe (tuple (start-block uint) (stop-block uint)))
+  )
+  (let (
+    (stream (unwrap! (map-get? streams stream-id) (sha256 0)))
+    (msg (concat (concat (unwrap-panic (to-consensus-buff? stream)) (unwrap-panic (to-consensus-buff? new-payment-per-block))) (unwrap-panic (to-consensus-buff? new-timeframe))))
+  )
+    (sha256 msg)
+  )
+)
+
+;; Signature verification
+(define-read-only (validate-signature (hash (buff 32)) (signature (buff 65)) (signer principal))
+        (is-eq 
+          (principal-of? (unwrap! (secp256k1-recover? hash signature) false)) 
+          (ok signer)
+        )
+)
+
+;; Withdraw excess locked tokens
+(define-public (refund
+    (stream-id uint)
+  )
+  (let (
+    (stream (unwrap! (map-get? streams stream-id) ERR_INVALID_STREAM_ID))
+    (balance (balance-of stream-id (get sender stream)))
+  )
+    (asserts! (is-eq contract-caller (get sender stream)) ERR_UNAUTHORIZED)
+    (asserts! (< (get stop-block (get timeframe stream)) block-height) ERR_STREAM_STILL_ACTIVE)
+    (map-set streams stream-id (merge stream {
+        balance: (- (get balance stream) balance),
+      }
+    ))
+    (try! (as-contract (stx-transfer? balance tx-sender (get sender stream))))
+    (ok balance)
+  )
+)
+
+;; Get stream token info
+(define-read-only (get-stream-token-info
+    (stream-id uint)
+  )
+  (let (
+    (stream (unwrap! (map-get? streams stream-id) ERR_INVALID_STREAM_ID))
+  )
+    (ok {
+      token-contract: (get token-contract stream)
+    })
+  )
+)
+
+;; Check if stream uses STX or token
+(define-read-only (is-stx-stream
+    (stream-id uint)
+  )
+  (match (map-get? streams stream-id)
+    stream (is-none (get token-contract stream))
+    false
+  )
+)
+
+;; Update stream configuration
+(define-public (update-details
+    (stream-id uint)
+    (payment-per-block uint)
+    (timeframe (tuple (start-block uint) (stop-block uint)))
+    (signer principal)
+    (signature (buff 65))
+  )
+  (let (
+    (stream (unwrap! (map-get? streams stream-id) ERR_INVALID_STREAM_ID))  
+  )
+    (asserts! (validate-signature (hash-stream stream-id payment-per-block timeframe) signature signer) ERR_INVALID_SIGNATURE)
+    (asserts!
+      (or
+        (and (is-eq (get sender stream) contract-caller) (is-eq (get recipient stream) signer))
+        (and (is-eq (get sender stream) signer) (is-eq (get recipient stream) contract-caller))
+      )
+      ERR_UNAUTHORIZED
+    )
+    (map-set streams stream-id (merge stream {
+        payment-per-block: payment-per-block,
+        timeframe: timeframe
+    }))
+    (ok true)
+  )
+)`;
+
+                status.textContent = 'Broadcasting transaction to testnet...';
+
+                // Create and broadcast transaction
+                const deployTx = await makeContractDeploy({
+                    contractName: 'sBTC-Streamr',
+                    codeBody: contractCode,
+                    senderKey: privateKey,
+                    network: network,
+                    fee: 10000,
+                    nonce: 0,
+                });
+
+                const result = await broadcastTransaction(deployTx, network);
+
+                if (result.ok) {
+                    status.className = 'status success';
+                    status.textContent = '✅ Contract deployed successfully!';
+                    
+                    result.innerHTML = `
+                        <div class="contract-info">
+                            <strong>Transaction ID:</strong> ${result.txid}<br>
+                            <strong>Contract Address:</strong> ${address}.sBTC-Streamr<br>
+                            <strong>Explorer Link:</strong> <a href="https://explorer.stacks.co/txid/${result.txid}?chain=testnet" target="_blank">View on Explorer</a>
+                        </div>
+                    `;
+                } else {
+                    status.className = 'status error';
+                    status.textContent = '❌ Deployment failed: ' + result.error;
+                }
+
+            } catch (error) {
+                status.className = 'status error';
+                status.textContent = '❌ Error: ' + error.message;
+                console.error('Deployment error:', error);
+            } finally {
+                deployBtn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>
