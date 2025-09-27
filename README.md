@@ -4,6 +4,12 @@
 
 A decentralized streaming protocol that enables continuous payments with STX, sBTC, and other SIP-010 tokens. Built for the Stacks Ascent Trailblazer Program as an original feature enhancement.
 
+## 🌐 Live Demo
+
+**Try it now:** [https://s-btc-streamr.vercel.app](https://s-btc-streamr.vercel.app)
+
+The application is deployed and ready to use! Connect your wallet and start streaming tokens.
+
 ## 🌟 Features
 
 ### Multi-Token Support (Original Feature)

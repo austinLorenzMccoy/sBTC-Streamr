@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { ArrowLeft, TrendingUp, TrendingDown, DollarSign, Clock, Users, Activity } from 'lucide-react'
+import { ArrowLeft, TrendingUp, TrendingDown, DollarSign, Clock, Users, Activity, RefreshCw } from 'lucide-react'
+import { callReadOnlyFunction, cvToValue, uintCV } from '@stacks/transactions'
+import { StacksTestnet } from '@stacks/network'
 
 interface AnalyticsData {
   totalStreams: number
